@@ -1,4 +1,4 @@
-# 数据说明
+# Data Format
 
 ``` json
 {
@@ -36,18 +36,14 @@
       "span": "AFP", "label": "organization", "asoc": []
     }
   ],
-  "task": 'record'
+  "task": "record"
 }
 ```
 
-- task: `seq`, `record`, `t5mlm`
-  - mlm 只要求有 Text
-  - seq 只要求有 Record
-  - record 要求有 Text-record 数据
-  - 若无，默认为 Text-record 数据
-- spot、asoc
-  - 文本中的正例类别
-- spot_asoc
-  - record 结构表示
-- entity relation event
-  - Offset 标准答案，用于模型验证。
+
+- text: raw input text
+- tokens: tokens for evaluation
+- record: the spot-asoc style structured extraction language instance
+- spot、asoc: positive type of single task fine-tuning
+- spot_asoc: target structure in the spot-asoc style
+- entity/relation/event: gold answer with offset for model evaluation

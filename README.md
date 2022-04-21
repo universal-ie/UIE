@@ -209,9 +209,7 @@ Related parameters in class _DataTrainingArguments_ are briefly introduced here:
 
 - About **_Sampling Strategy_**
 ``` text
-    - sample_prompt           Whether to sample prompt, 'True' means using prompt sampling, 'False' does not.
     - max_prefix_length       Maximum length of prompt
-    - source_prefix           refers to format of schema prompt
     - record_schema           record schema read from record.schema
     - meta_negative           number of negative schema
     - meta_positive_rate      rate of positive spot
@@ -220,7 +218,6 @@ Related parameters in class _DataTrainingArguments_ are briefly introduced here:
 
 - About **_Rejection Mechanism_**
 ``` text
-
   - spot_noise              The noise rate of null spot
   - asoc_noise              The noise rate of null asoc
 ```

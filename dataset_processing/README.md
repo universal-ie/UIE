@@ -35,6 +35,7 @@ converted_data/text2spotasoc/event/oneie_ace05_en_event
 └── val.json
 ```
 
+Example of event
 ```json
 {
     "text": "Next week ’ s trial of Mee is expected to attract widespread media attention .",
@@ -49,25 +50,29 @@ converted_data/text2spotasoc/event/oneie_ace05_en_event
 }
 ```
 
+Schema file
+```
+# event.schema / same as record.schema
+["elect", "born", "transport", "phone write", "marry", "die", "start position", "injure", "transfer ownership", "meet", "nominate", "attack", "start organization", "trial hearing", "convict", "sentence", "end position", "divorce", "acquit", "charge indict", "transfer money", "appeal", "sue", "merge organization", "declare bankruptcy", "execute", "arrest jail", "extradite", "demonstrate", "end organization", "release parole", "fine", "pardon"]
+["recipient", "victim", "target", "entity", "beneficiary", "plaintiff", "agent", "adjudicator", "place", "seller", "destination", "instrument", "artifact", "vehicle", "origin", "prosecutor", "organization", "attacker", "defendant", "buyer", "giver", "person"]
+{"elect": ["entity", "place", "person"], "born": ["place", "person"], "transport": ["artifact", "vehicle", "victim", "origin", "agent", "place", "destination"], "phone write": ["place", "entity"], "marry": ["place", "person"], "die": ["victim", "agent", "place", "instrument", "person"], "start position": ["entity", "place", "person"], "injure": ["instrument", "victim", "agent", "place"], "transfer ownership": ["artifact", "beneficiary", "place", "seller", "buyer"], "meet": ["place", "entity"], "nominate": ["agent", "person"], "attack": ["victim", "target", "agent", "attacker", "place", "instrument"], "start organization": ["organization", "place", "agent"], "trial hearing": ["adjudicator", "prosecutor", "place", "defendant"], "convict": ["place", "adjudicator", "defendant"], "sentence": ["place", "adjudicator", "defendant"], "end position": ["entity", "place", "person"], "divorce": ["place", "person"], "acquit": ["adjudicator", "defendant"], "charge indict": ["prosecutor", "place", "adjudicator", "defendant"], "transfer money": ["recipient", "giver", "place", "beneficiary"], "appeal": ["plaintiff", "place", "adjudicator"], "sue": ["plaintiff", "place", "adjudicator", "defendant"], "merge organization": ["organization"], "declare bankruptcy": ["organization", "place"], "execute": ["agent", "place", "person"], "arrest jail": ["agent", "place", "person"], "extradite": ["person", "destination", "agent", "origin"], "demonstrate": ["place", "entity"], "end organization": ["organization", "place"], "release parole": ["entity", "place", "person"], "fine": ["place", "adjudicator", "entity"], "pardon": ["place", "adjudicator", "defendant"]}
+```
+
 ## Dataset Config
 
 ```yaml
-# data_config/entity/ace2005_english_name.yaml
-name: ace2005_english_name                          # Dataset Name
-path: data/spannet_data/entity/ace2005_english_name # Dataset Folder
-data_class: Spannet                                 # Task Format
-split:                                              # Dataset Split
-  train: train.jsonlines
-  val: dev.jsonlines
-  test: test.jsonlines
+# data_config/entity/conll03.yaml
+name: conll03               # Dataset Name
+path: data/conll03/conll03  # Dataset Folder
+data_class: CoNLL03         # Task Format
+split:                      # Dataset Split
+  train: eng.train
+  val: eng.testa
+  test: eng.testb
 language: en
-
 mapper:
-  FAC: facility
-  GPE: geographical social political
   LOC: location
   ORG: organization
   PER: person
-  VEH: vehicle
-  WEA: weapon
+  MISC: miscellaneous
 ```
