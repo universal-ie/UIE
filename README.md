@@ -75,9 +75,9 @@ It contains three lines: the first line is spot name list, the second line is as
 ### Pretrained Models
 You can find the pre-trained models as following CAS Cloud Box/Google Drive links or download models using command `gdown` (`pip install gdown`).
 
-uie-en-base [[CAS Cloud Box]](https://pan.cstcloud.cn/s/Ncp9mI4Sc0) [[Google Drive]](https://drive.google.com/file/d/12Dkh6KLDPvXrkQ1I-1xLqODQSYjkwnvs/view) [[Huggingface]](https://huggingface.co/luyaojie/uie-base-en)
+uie-en-base [[CAS Cloud Box]](https://pan.cstcloud.cn/s/w2hTaHYaRWw) [[Google Drive]](https://drive.google.com/file/d/12Dkh6KLDPvXrkQ1I-1xLqODQSYjkwnvs/view) [[Huggingface]](https://huggingface.co/luyaojie/uie-base-en)
 
-uie-en-large [[CAS Cloud Box]](https://pan.cstcloud.cn/s/cmZg0iwTok) [[Google Drive]](https://drive.google.com/file/d/15OFkWw8kJA1k2g_zehZ0pxcjTABY2iF1/view) [[Huggingface]](https://huggingface.co/luyaojie/uie-large-en)
+uie-en-large [[CAS Cloud Box]](https://pan.cstcloud.cn/s/2vrXYBVTbk) [[Google Drive]](https://drive.google.com/file/d/15OFkWw8kJA1k2g_zehZ0pxcjTABY2iF1/view) [[Huggingface]](https://huggingface.co/luyaojie/uie-large-en)
 
 ``` bash
 # Example of Google Drive
@@ -111,10 +111,10 @@ Trained models are saved in the `output_dir` specified by `run_seq2seq_record.ba
 Simple Training Command
 ```
 bash run_seq2seq_record.bash -v -d 2 \
-  -b 16 -k 1 --lr 3e-4 --warmup_ratio 0.06
+  -b 16 -k 1 --lr 3e-4 --warmup_ratio 0.06 \
   -i absa/14lap --epoch 50 \
-  --spot_noise 0.1 --asoc_noise 0.1 -f spotasoc
-  --epoch 50 --map_config config/offset_map/closest_offset_en.yaml
+  --spot_noise 0.1 --asoc_noise 0.1 -f spotasoc \
+  --epoch 50 --map_config config/offset_map/closest_offset_en.yaml \
   -m hf_models/uie-base-en \
   --random_prompt
 ```
