@@ -1,5 +1,5 @@
 name: scierc
-path: data/spannet_data/relation/dygiepp/scierc
+path: data/relation/scierc
 data_class: Spannet
 split:
   train: train.jsonlines

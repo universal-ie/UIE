@@ -1,5 +1,5 @@
 name: casie
-path: data/casie
+path: data/casie/data
 data_class: CASIE
 split:
   train: train.jsonlines

@@ -1,5 +1,5 @@
 name: conll04
-path: data/spannet_data/relation/conll04
+path: data/relation/conll04
 data_class: Spannet
 split:
   train: train.jsonlines

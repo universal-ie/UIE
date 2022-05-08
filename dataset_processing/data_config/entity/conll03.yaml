@@ -1,5 +1,5 @@
 name: conll03
-path: data/conll03/conll03
+path: data/conll03
 data_class: CoNLL03
 split:
   train: eng.train

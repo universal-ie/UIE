@@ -1,5 +1,5 @@
 name: ace05-rel
-path: data/spannet_data/relation/ace05
+path: data/relation/ace05
 data_class: Spannet
 split:
   train: train.jsonlines

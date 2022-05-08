@@ -9,7 +9,7 @@ do
     do
         for seed in 1 2 3 4 5 6 7 8 9 10
         do
-            rm -r converted_data/text2spotasoc/${data_format}/${dataset}_ratio/seed${seed}
+            rm -r converted_data/text2spotasoc/${data_format}/${dataset}_ratio/seed${seed} || true
             echo "Convert" converted_data/text2spotasoc/${data_format}/${dataset} "To" converted_data/text2spotasoc/${data_format}/${dataset}_ratio/seed${seed}
             python scripts/sample_data_ratio.py -seed ${seed} \
                 -src converted_data/text2spotasoc/${data_format}/${dataset} \
@@ -25,7 +25,7 @@ do
     do
         for seed in 1 2 3 4 5 6 7 8 9 10
         do
-            rm -r converted_data/text2spotasoc/${data_format}/${dataset}_shot/seed${seed}
+            rm -r converted_data/text2spotasoc/${data_format}/${dataset}_shot/seed${seed} || true
             echo "Convert" converted_data/text2spotasoc/${data_format}/${dataset} "To" converted_data/text2spotasoc/${data_format}/${dataset}_shot/seed${seed}
             python scripts/sample_data_shot.py -seed ${seed} \
                 -src converted_data/text2spotasoc/${data_format}/${dataset} \
@@ -42,7 +42,7 @@ do
     do
         for seed in 1 2 3 4 5 6 7 8 9 10
         do
-            rm -r converted_data/text2spotasoc/${data_format}/${dataset}_shot/seed${seed}
+            rm -r converted_data/text2spotasoc/${data_format}/${dataset}_shot/seed${seed} || true
             echo "Convert" converted_data/text2spotasoc/${data_format}/${dataset} "To" converted_data/text2spotasoc/${data_format}/${dataset}_shot/seed${seed}
             python scripts/sample_data_shot.py -seed ${seed} \
                 -src converted_data/text2spotasoc/${data_format}/${dataset} \
