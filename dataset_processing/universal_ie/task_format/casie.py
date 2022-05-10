@@ -65,7 +65,6 @@ class CASIE(TaskFormat):
     @staticmethod
     def load_from_file(filename, language="en") -> List[Sentence]:
         sentence_list = []
-        cross_sentence_cnt = 0
         counter = Counter()
 
         with open(filename) as fin:
@@ -80,6 +79,10 @@ class CASIE(TaskFormat):
                         nugget = mention["nugget"]
                         sent_id = nugget["tokens"][0][0]
 
+                        if nugget["tokens"][0][0] != nugget["tokens"][-1][0]:
+                            counter.update(['cross_sentence_trigger'])
+                            continue
+
                         event_mention = {
                             "id": mention["id"],
                             "type": mention["subtype"],
@@ -89,6 +92,9 @@ class CASIE(TaskFormat):
                         counter.update(['event mention'])
 
                         for argument in mention["arguments"]:
+                            if argument["tokens"][0][0] != argument["tokens"][-1][0]:
+                                counter.update(['cross_sentence_arg'])
+                                continue
                             arg_sent_id = argument["tokens"][0][0]
                             entity_mention = {
                                 "id": argument["id"],
@@ -109,7 +115,7 @@ class CASIE(TaskFormat):
                                 )
                                 counter.update(['argument'])
                             else:
-                                counter.update(['cross_sentence_cnt'])
+                                counter.update(['cross_sentence_tri_arg'])
 
                         event_mentions[sent_id].append(event_mention)
 
