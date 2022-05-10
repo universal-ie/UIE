@@ -39,7 +39,7 @@ class ConstraintSeq2SeqTrainer(Seq2SeqTrainer):
 
         # Label smoothing by sum token loss, different from different Label smootheing
         if self.args.label_smoothing_factor != 0:
-            self.label_smoother = LabelSmoother()
+            self.label_smoother = LabelSmoother(epsilon=self.args.label_smoothing_factor)
             print('Using %s' % self.label_smoother)
         else:
             self.label_smoother = None
