@@ -29,8 +29,6 @@ split_bracket = re.compile(r"<extra_id_\d>")
 def add_space(text):
     """
     add space between special token
-    :param text:
-    :return:
     """
     new_text_list = list()
     for item in zip(split_bracket.findall(text), split_bracket.split(text)[1:]):
@@ -49,9 +47,7 @@ def convert_bracket(text):
 
 def find_bracket_num(tree_str):
     """
-    Count Bracket Number, 0 indicate num_left = num_right
-    :param tree_str:
-    :return:
+    Count Bracket Number (num_left - num_right), 0 indicates num_left = num_right
     """
     count = 0
     for char in tree_str:
@@ -92,20 +88,15 @@ def resplit_label_span(label, span, split_symbol=span_start):
     label_span = label + ' ' + span
 
     if split_symbol in label_span:
-        try:
-            new_label, new_span = label_span.split(split_symbol)
-            return new_label.strip(), new_span.strip()
-        except:
-            print('resplit_label_span error:', label_span, split_symbol)
+        splited_label_span = label_span.split(split_symbol)
+        if len(splited_label_span) == 2:
+            return splited_label_span[0].strip(), splited_label_span[1].strip()
 
     return label, span
 
 
 def add_bracket(tree_str):
-    """
-    add right bracket to fill ill-formed
-    :param tree_str:
-    :return:
+    """add right bracket to fix ill-formed expression
     """
     tree_str_list = tree_str.split()
     bracket_num = find_bracket_num(tree_str_list)
@@ -114,10 +105,7 @@ def add_bracket(tree_str):
 
 
 def get_tree_str(tree):
-    """
-    get str from event tree
-    :param tree:
-    :return:
+    """get str from sel tree
     """
     str_list = list()
     for element in tree:
@@ -157,15 +145,15 @@ class SpotAsocPredictParser(PredictParser):
         :param raw_list:
         :return:
             dict:
-                pred_event -> [(type1, trigger1), (type2, trigger2), ...]
-                gold_event -> [(type1, trigger1), (type2, trigger2), ...]
-                pred_role -> [(type1, role1, argument1), (type2, role2, argument2), ...]
-                gold_role -> [(type1, role1, argument1), (type2, role2, argument2), ...]
-                pred_record -> [{'type': type1, 'trigger': trigger1, 'roles': [(type1, role1, argument1), ...]},
-                                {'type': type2, 'trigger': trigger2, 'roles': [(type2, role2, argument2), ...]},
+                pred_spot -> [(type1, text1), (type2, text2), ...]
+                gold_spot -> [(type1, text1), (type2, text2), ...]
+                pred_asoc -> [(spot type1, asoc type1, text1), (spot type2, asoc type2, text2), ...]
+                gold_asoc -> [(spot type1, asoc type1, text1), (spot type2, asoc type2, text2), ...]
+                pred_record -> [{'type': type1, 'text': text1, 'roles': [(spot type1, asoc type1, text1), ...]},
+                                {'type': type2, 'text': text2, 'roles': [(spot type2, asoc type2, text2), ...]},
                                 ]
-                gold_record -> [{'type': type1, 'trigger': trigger1, 'roles': [(type1, role1, argument1), ...]},
-                                {'type': type2, 'trigger': trigger2, 'roles': [(type2, role2, argument2), ...]},
+                gold_record -> [{'type': type1, 'text': text1, 'roles': [(spot type1, asoc type1, text1), ...]},
+                                {'type': type2, 'text': text2, 'roles': [(spot type2, asoc type2, text2), ...]},
                                 ]
             Counter:
         """
@@ -181,7 +169,8 @@ class SpotAsocPredictParser(PredictParser):
         if raw_list is None:
             raw_list = [None] * len(pred_list)
 
-        for gold, pred, text, raw_data in zip(gold_list, pred_list, text_list, raw_list):
+        for gold, pred, text, raw_data in zip(gold_list, pred_list, text_list,
+                                              raw_list):
             gold = convert_bracket(gold)
             pred = convert_bracket(pred)
 
@@ -196,17 +185,18 @@ class SpotAsocPredictParser(PredictParser):
                     add_bracket(gold), brackets=brackets)
                 counter.update(['gold_tree add_bracket'])
 
-            instance = {'gold': gold,
-                        'pred': pred,
-                        'gold_tree': gold_tree,
-                        'text': text,
-                        'raw_data': raw_data
-                        }
+            instance = {
+                'gold': gold,
+                'pred': pred,
+                'gold_tree': gold_tree,
+                'text': text,
+                'raw_data': raw_data
+            }
 
             counter.update(['gold_tree' for _ in gold_tree])
 
-            instance['gold_event'], instance['gold_role'], instance['gold_record'] = self.get_record_list(
-                tree=instance["gold_tree"],
+            instance['gold_spot'], instance['gold_asoc'], instance['gold_record'] = self.get_record_list(
+                sel_tree=instance["gold_tree"],
                 text=instance['text']
             )
 
@@ -229,8 +219,8 @@ class SpotAsocPredictParser(PredictParser):
                     brackets=brackets
                 )
 
-            instance['pred_event'], instance['pred_role'], instance['pred_record'] = self.get_record_list(
-                tree=instance["pred_tree"],
+            instance['pred_spot'], instance['pred_asoc'], instance['pred_record'] = self.get_record_list(
+                sel_tree=instance["pred_tree"],
                 text=instance['text']
             )
 
@@ -238,40 +228,51 @@ class SpotAsocPredictParser(PredictParser):
 
         return well_formed_list, counter
 
-    def get_record_list(self, tree, text=None):
+    def get_record_list(self, sel_tree, text=None):
+        """ Convert single sel expression to extraction records
+        Args:
+            sel_tree (Tree): sel tree
+            text (str, optional): _description_. Defaults to None.
+        Returns:
+            spot_list: list of (spot_type: str, spot_span: str)
+            asoc_list: list of (spot_type: str, asoc_label: str, asoc_text: str)
+            record_list: list of {'asocs': list(), 'type': spot_type, 'spot': spot_text}
+        """
 
         spot_list = list()
         asoc_list = list()
         record_list = list()
 
-        for spot_tree in tree:
+        for spot_tree in sel_tree:
 
-            if isinstance(spot_tree, str):
-                continue
-
-            if len(spot_tree) == 0:
+            # Drop incomplete tree
+            if isinstance(spot_tree, str) or len(spot_tree) == 0:
                 continue
 
             spot_type = spot_tree.label()
-            spot_trigger = get_tree_str(spot_tree)
-            spot_type, spot_trigger = resplit_label_span(
-                spot_type, spot_trigger)
-            spot_type, spot_trigger = rewrite_label_span(
+            spot_text = get_tree_str(spot_tree)
+            spot_type, spot_text = resplit_label_span(
+                spot_type, spot_text)
+            spot_type, spot_text = rewrite_label_span(
                 label=spot_type,
-                span=spot_trigger,
-                label_set=self.predicate_set,
+                span=spot_text,
+                label_set=self.spot_set,
                 text=text
             )
 
-            if spot_trigger == null_span:
+            # Drop empty generated span
+            if spot_text is None or spot_text == null_span:
+                continue
+            # Drop empty generated type
+            if spot_type is None:
+                continue
+            # Drop invalid spot type
+            if self.spot_set is not None and spot_type not in self.spot_set:
                 continue
 
-            if spot_type is None or spot_trigger is None:
-                continue
-
-            record = {'roles': list(),
+            record = {'asocs': list(),
                       'type': spot_type,
-                      'trigger': spot_trigger}
+                      'spot': spot_text}
 
             for asoc_tree in spot_tree:
                 if isinstance(asoc_tree, str) or len(asoc_tree) < 1:
@@ -288,15 +289,20 @@ class SpotAsocPredictParser(PredictParser):
                     text=text
                 )
 
-                if asoc_text == null_span:
+                # Drop empty generated span
+                if asoc_text is None or asoc_text == null_span:
                     continue
-                if asoc_label is None or asoc_text is None:
+                # Drop empty generated type
+                if asoc_label is None:
+                    continue
+                # Drop invalid asoc type
+                if self.role_set is not None and asoc_label not in self.role_set:
                     continue
 
                 asoc_list += [(spot_type, asoc_label, asoc_text)]
-                record['roles'] += [(asoc_label, asoc_text)]
+                record['asocs'] += [(asoc_label, asoc_text)]
 
-            spot_list += [(spot_type, spot_trigger)]
+            spot_list += [(spot_type, spot_text)]
             record_list += [record]
 
         return spot_list, asoc_list, record_list

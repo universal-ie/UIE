@@ -17,8 +17,8 @@ def eval_pred(predict_parser: PredictParser, gold_list, pred_list, text_list=Non
     ordered_record_metric = OrderedRecordMetric()
 
     for instance in well_formed_list:
-        spot_metric.count_instance(instance['gold_event'], instance['pred_event'])
-        asoc_metric.count_instance(instance['gold_role'], instance['pred_role'])
+        spot_metric.count_instance(instance['gold_spot'], instance['pred_spot'])
+        asoc_metric.count_instance(instance['gold_asoc'], instance['pred_asoc'])
         record_metric.count_instance(instance['gold_record'], instance['pred_record'])
         ordered_record_metric.count_instance(instance['gold_record'], instance['pred_record'])
 

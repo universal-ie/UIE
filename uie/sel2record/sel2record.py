@@ -18,7 +18,7 @@ task_record_map = {
 
 
 def proprocessing_graph_record(graph, schema_dict):
-    """Mapping generated spot-asoc result to Entity/Relation/Event
+    """ Mapping generated spot-asoc result to Entity/Relation/Event
     将抽取的Spot-Asoc结构，根据不同的 Schema 转换成 Entity/Relation/Event 结果
     """
     records = {
@@ -35,13 +35,17 @@ def proprocessing_graph_record(graph, schema_dict):
 
         if record['type'] in schema_dict['entity'].type_list:
             records['entity'] += [{
-                'trigger': record['trigger'],
+                'text': record['spot'],
                 'type': record['type']
             }]
-            entity_dict[record['trigger']] = record['type']
+            entity_dict[record['spot']] = record['type']
 
         elif record['type'] in schema_dict['event'].type_list:
-            records['event'] += [record]
+            records['event'] += [{
+                'trigger': record['spot'],
+                'type': record['type'],
+                'roles': record['asocs']
+            }]
 
         else:
             print("Type `%s` invalid." % record['type'])
@@ -50,13 +54,13 @@ def proprocessing_graph_record(graph, schema_dict):
     # Mapping generated asoc result to Relation/Argument
     for record in graph['pred_record']:
         if record['type'] in schema_dict['entity'].type_list:
-            for role in record['roles']:
+            for role in record['asocs']:
                 records['relation'] += [{
                     'type': role[0],
-                    'roles': [(record['type'], record['trigger']),
-                              (entity_dict.get(
-                                  role[1], record['type']), role[1]),
-                              ]
+                    'roles': [
+                        (record['type'], record['spot']),
+                        (entity_dict.get(role[1], record['type']), role[1]),
+                    ]
                 }]
 
     if len(entity_dict) > 0:

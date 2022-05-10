@@ -87,11 +87,11 @@ class RecordMetric(Metric):
     def is_equal(gold, pred):
         if gold['type'] != pred['type']:
             return False
-        if gold['trigger'] != pred['trigger']:
+        if gold['spot'] != pred['spot']:
             return False
-        if len(gold['roles']) != len(pred['roles']):
+        if len(gold['asocs']) != len(pred['asocs']):
             return False
-        for gold_role, pred_role in zip(sorted(gold['roles']), sorted(pred['roles'])):
+        for gold_role, pred_role in zip(sorted(gold['asocs']), sorted(pred['asocs'])):
             if gold_role != pred_role:
                 return False
         return True
@@ -124,11 +124,11 @@ class OrderedRecordMetric(RecordMetric):
     def is_equal(gold, pred):
         if gold['type'] != pred['type']:
             return False
-        if gold['trigger'] != pred['trigger']:
+        if gold['spot'] != pred['spot']:
             return False
-        if len(gold['roles']) != len(pred['roles']):
+        if len(gold['asocs']) != len(pred['asocs']):
             return False
-        for gold_role, pred_role in zip(gold['roles'], pred['roles']):
+        for gold_role, pred_role in zip(gold['asocs'], pred['asocs']):
             if gold_role != pred_role:
                 return False
         return True

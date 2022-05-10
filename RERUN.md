@@ -117,11 +117,6 @@ det cmd run --config-file config/det_conf/det.conf -c ./ \
      --config resources.slots=4 \
     ". config/data_conf/large_scierc_conf.ini && model_name=uie-large-en dataset_name=relation/scierc bash scripts_exp/run_exp.bash"
 
-det cmd run -d --config-file config/det_conf/det.conf -c ./ \
-    --config description=uie.base.scierc \
-     --config resources.slots=1 \
-    ". config/data_conf/base_scierc_conf.ini && model_name=uie-base-en dataset_name=relation/scierc bash scripts_exp/run_exp.bash"
-
 det cmd run --config-file config/det_conf/det.conf -c ./ \
     --config description=uie.large.conll04 \
      --config resources.slots=4 \

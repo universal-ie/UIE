@@ -84,12 +84,14 @@ class Record:
 
 
 class EntityRecord(Record):
+    """ Record for converting generated string to information record <type, span>
+    """
 
     @staticmethod
     def to_string(pred_record_list):
         entity_list = list()
         for pred_record in pred_record_list:
-            record_type, record_text = pred_record['type'], pred_record['trigger']
+            record_type, record_text = pred_record['type'], pred_record['text']
             if record_text == "":
                 logger.warning(f"Empty Extraction {pred_record}")
                 continue
@@ -97,7 +99,6 @@ class EntityRecord(Record):
         return entity_list
 
     def to_offset(self, instance, tokens):
-        # map_strategy='first', de_duplicate=True
         map_strategy_dict = {
             'first': self.record_to_offset_first_role,
             'closest': self.record_to_offset_closest_role,
@@ -108,15 +109,18 @@ class EntityRecord(Record):
             map_function = map_strategy_dict[self._map_config.map_strategy]
             return map_function(
                 instance=instance,
-                token_list=tokens,
-            )
+                token_list=tokens, )
         else:
             raise NotImplementedError(
-                f"The map strategy {self._map_config.map_strategy} in {self.__class__} is not implemented.")
+                f"The map strategy {self._map_config.map_strategy} in {self.__class__} is not implemented."
+            )
 
-    def record_to_offset_closest_role(self, instance, token_list,):
+    def record_to_offset_closest_role(
+            self,
+            instance,
+            token_list, ):
         """
-        Find Role's offset using closest matched with trigger work.
+        Find Role's offset using closest matched with trigger word.
         :param instance:
         :return:
         """
@@ -132,12 +136,12 @@ class EntityRecord(Record):
 
         entity_matched_set = set()
         for pred_record in instance:
-            record_type, record_text = pred_record['type'], pred_record['trigger']
+            record_type, record_text = pred_record['type'], pred_record['text']
             if record_text == "":
                 logger.warning(f"Empty Extraction {pred_record}")
                 continue
-            matched_list = match_sublist(
-                token_list, self.span_to_token(record_text))
+            matched_list = match_sublist(token_list,
+                                         self.span_to_token(record_text))
             for matched in matched_list:
                 if (record_type, matched) not in entity_matched_set:
                     entity_list += [(record_type,
@@ -157,17 +161,17 @@ class EntityRecord(Record):
 
         entity_matched_set = set()
         for x in instance:
-            x['length'] = len(x['trigger'])
+            x['length'] = len(x['text'])
         instance.sort(reverse=True, key=lambda x: x['length'])
 
         for pred_record in instance:
-            record_type, record_text = pred_record['type'], pred_record['trigger']
+            record_type, record_text = pred_record['type'], pred_record['text']
             if record_text == "":
                 logger.warning(f"Empty Extraction {pred_record}")
                 continue
 
-            matched_list = match_sublist(
-                token_list, self.span_to_token(record_text))
+            matched_list = match_sublist(token_list,
+                                         self.span_to_token(record_text))
             for matched in matched_list:
                 flag = False
                 for _, g in entity_matched_set:
@@ -186,6 +190,9 @@ class EntityRecord(Record):
 
 
 class RelationRecord(Record):
+    """ Record for converting generated string to information record
+    <type, arg1_type, arg1_span, arg2_type, arg2_span>
+    """
 
     def to_offset(self, instance, tokens):
         map_strategy_dict = {
@@ -197,11 +204,11 @@ class RelationRecord(Record):
             map_function = map_strategy_dict[self._map_config.map_strategy]
             return map_function(
                 instance=instance,
-                token_list=tokens,
-            )
+                token_list=tokens, )
         else:
             raise NotImplementedError(
-                f"The map strategy {self._map_config.map_strategy} in {self.__class__} is not implemented.")
+                f"The map strategy {self._map_config.map_strategy} in {self.__class__} is not implemented."
+            )
 
     @staticmethod
     def to_string(instance):
@@ -232,14 +239,15 @@ class RelationRecord(Record):
 
             relation = [relation_type]
             for role_type, text_str in record['roles'][:2]:
-                matched_list = match_sublist(
-                    token_list, self.span_to_token(text_str))
+                matched_list = match_sublist(token_list,
+                                             self.span_to_token(text_str))
                 if len(matched_list) == 0:
-                    sys.stderr.write("[Cannot reconstruct]: %s %s\n" %
-                                     (text_str, token_list))
+                    logger.warning("[Cannot reconstruct]: %s %s\n" %
+                                   (text_str, token_list))
                     break
                 relation += [role_type, get_index_tuple(matched_list[0])]
-            if len(relation) != 5 or (self._map_config.de_duplicate and tuple(relation) in relation_list):
+            if len(relation) != 5 or (self._map_config.de_duplicate and
+                                      tuple(relation) in relation_list):
                 continue
             relation_list += [tuple(relation)]
 
@@ -247,7 +255,7 @@ class RelationRecord(Record):
 
     def record_to_offset_closest_role(self, instance, token_list):
         """
-        Find Role's offset using closest matched with trigger work.
+        Find Role's offset using closest matched with trigger word.
         :param instance:
         :return:
         """
@@ -261,18 +269,18 @@ class RelationRecord(Record):
 
             arg1_type, arg1_text = record['roles'][0]
             arg2_type, arg2_text = record['roles'][1]
-            arg1_matched_list = match_sublist(
-                token_list, self.span_to_token(arg1_text))
-            arg2_matched_list = match_sublist(
-                token_list, self.span_to_token(arg2_text))
+            arg1_matched_list = match_sublist(token_list,
+                                              self.span_to_token(arg1_text))
+            arg2_matched_list = match_sublist(token_list,
+                                              self.span_to_token(arg2_text))
 
             if len(arg1_matched_list) == 0:
-                sys.stderr.write("[Cannot reconstruct]: %s %s\n" %
-                                 (arg1_text, token_list))
+                logger.warning("[Cannot reconstruct]: %s %s\n" %
+                               (arg1_text, token_list))
                 break
             if len(arg2_matched_list) == 0:
-                sys.stderr.write("[Cannot reconstruct]: %s %s\n" %
-                                 (arg2_text, token_list))
+                logger.warning("[Cannot reconstruct]: %s %s\n" %
+                               (arg2_text, token_list))
                 break
 
             distance_tuple = list()
@@ -282,11 +290,15 @@ class RelationRecord(Record):
                     distance_tuple += [(distance, arg1_match, arg2_match)]
             distance_tuple.sort()
 
-            relation = [relation_type,
-                        arg1_type, get_index_tuple(distance_tuple[0][1]),
-                        arg2_type, get_index_tuple(distance_tuple[0][2]),
-                        ]
-            if self._map_config.de_duplicate and tuple(relation) in relation_list:
+            relation = [
+                relation_type,
+                arg1_type,
+                get_index_tuple(distance_tuple[0][1]),
+                arg2_type,
+                get_index_tuple(distance_tuple[0][2]),
+            ]
+            if self._map_config.de_duplicate and tuple(
+                    relation) in relation_list:
                 continue
             relation_list += [tuple(relation)]
 
@@ -294,6 +306,14 @@ class RelationRecord(Record):
 
 
 class EventRecord(Record):
+    """ Record for converting generated string to information record in predicate-arguments
+    {
+        type: pred_type,
+        trigger: predicate_span,
+        args: [(arg_type, arg_span), ...]
+    }
+    """
+
     def to_offset(self, instance, tokens):
         map_strategy_dict = {
             'first': self.record_to_offset_first_role,
@@ -304,11 +324,11 @@ class EventRecord(Record):
             map_function = map_strategy_dict[self._map_config.map_strategy]
             return map_function(
                 instance=instance,
-                token_list=tokens,
-            )
+                token_list=tokens, )
         else:
             raise NotImplementedError(
-                f"The map strategy {self._map_config.map_strategy} in {self.__class__} is not implemented.")
+                f"The map strategy {self._map_config.map_strategy} in {self.__class__} is not implemented."
+            )
 
     @staticmethod
     def to_string(instance):
@@ -325,8 +345,6 @@ class EventRecord(Record):
     def record_to_offset_first_role(self, instance, token_list):
         """
         Find Role's offset using first matched in the sentence.
-        :param instance:
-        :return:
         """
         record_list = list()
 
@@ -334,12 +352,12 @@ class EventRecord(Record):
         for record in instance:
             event_type = record['type']
             trigger = record['trigger']
-            matched_list = match_sublist(
-                token_list, self.span_to_token(trigger))
+            matched_list = match_sublist(token_list,
+                                         self.span_to_token(trigger))
 
             if len(matched_list) == 0:
-                sys.stderr.write("[Cannot reconstruct]: %s %s\n" %
-                                 (trigger, token_list))
+                logger.warning("[Cannot reconstruct]: %s %s\n" %
+                               (trigger, token_list))
                 continue
 
             trigger_offset = None
@@ -353,16 +371,18 @@ class EventRecord(Record):
             if trigger_offset is None:
                 break
 
-            pred_record = {'type': event_type,
-                           'roles': [],
-                           'trigger': trigger_offset}
+            pred_record = {
+                'type': event_type,
+                'roles': [],
+                'trigger': trigger_offset
+            }
 
             for role_type, text_str in record['roles']:
-                matched_list = match_sublist(
-                    token_list, self.span_to_token(text_str))
+                matched_list = match_sublist(token_list,
+                                             self.span_to_token(text_str))
                 if len(matched_list) == 0:
-                    sys.stderr.write(
-                        "[Cannot reconstruct]: %s %s\n" % (text_str, token_list))
+                    logger.warning("[Cannot reconstruct]: %s %s\n" %
+                                   (text_str, token_list))
                     continue
                 pred_record['roles'] += [(role_type,
                                           get_index_tuple(matched_list[0]))]
@@ -373,9 +393,7 @@ class EventRecord(Record):
 
     def record_to_offset_closest_role(self, instance, token_list):
         """
-        Find Role's offset using closest matched with trigger work.
-        :param instance:
-        :return:
+        Find Role's offset using closest matched with trigger word.
         """
         record_list = list()
 
@@ -383,12 +401,12 @@ class EventRecord(Record):
         for record in instance:
             event_type = record['type']
             trigger = record['trigger']
-            matched_list = match_sublist(
-                token_list, self.span_to_token(trigger))
+            matched_list = match_sublist(token_list,
+                                         self.span_to_token(trigger))
 
             if len(matched_list) == 0:
-                sys.stderr.write("[Cannot reconstruct]: %s %s\n" %
-                                 (trigger, token_list))
+                logger.warning("[Cannot reconstruct]: %s %s\n" %
+                               (trigger, token_list))
                 continue
 
             trigger_offset = None
@@ -402,26 +420,27 @@ class EventRecord(Record):
             if trigger_offset is None or len(trigger_offset) == 0:
                 break
 
-            pred_record = {'type': event_type,
-                           'roles': [],
-                           'trigger': trigger_offset}
+            pred_record = {
+                'type': event_type,
+                'roles': [],
+                'trigger': trigger_offset
+            }
 
             for role_type, text_str in record['roles']:
-                matched_list = match_sublist(
-                    token_list, self.span_to_token(text_str))
-                # if len(matched_list) == 1:
-                #     pred_record['roles'] += [(role_type, get_index_tuple(matched_list[0]))]
+                matched_list = match_sublist(token_list,
+                                             self.span_to_token(text_str))
                 if len(matched_list) == 0:
-                    sys.stderr.write(
-                        "[Cannot reconstruct]: %s %s\n" % (text_str, token_list))
+                    logger.warning("[Cannot reconstruct]: %s %s\n" %
+                                   (text_str, token_list))
                 else:
-                    abs_distances = [abs(match[0] - trigger_offset[0])
-                                     for match in matched_list]
+                    abs_distances = [
+                        abs(match[0] - trigger_offset[0])
+                        for match in matched_list
+                    ]
                     closest_index = numpy.argmin(abs_distances)
                     pred_record['roles'] += [(
                         role_type,
-                        get_index_tuple(matched_list[closest_index])
-                    )]
+                        get_index_tuple(matched_list[closest_index]))]
 
             record_list += [pred_record]
         return record_list

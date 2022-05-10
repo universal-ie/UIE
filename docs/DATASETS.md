@@ -44,6 +44,6 @@
 - text: raw input text
 - tokens: tokens for evaluation
 - record: the spot-asoc style structured extraction language instance
-- spot、asoc: positive type of single task fine-tuning
+- spot/asoc: positive type of single task fine-tuning, used for noise rejection
 - spot_asoc: target structure in the spot-asoc style
 - entity/relation/event: gold answer with offset for model evaluation

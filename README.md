@@ -1,6 +1,10 @@
 # UIE
 
-- Code for [`Unified Structure Generation for Universal Information Extraction`](https://arxiv.org/pdf/2203.12277.pdf)
+- Code for [``Unified Structure Generation for Universal Information Extraction``](https://arxiv.org/pdf/2203.12277.pdf)
+- Please contact [Yaojie Lu](http://luyaojie.github.io) ([@luyaojie](mailto:yaojie2017@iscas.ac.cn)) for questions and suggestions.
+
+## Update
+- [2022-05-10] Update data preprocessing code.
 
 ## Requirements
 
@@ -26,10 +30,18 @@ pip install -r requirements.txt
 
 ## Quick Start
 
+### Datasets of Extraction Tasks
+
+Details of preprocessing see [Data preprocessing](`dataset_processing/`).
+
+After that, please link the preprocessed dataset as:
+``` bash
+ln -s dataset_processing/converted_data/ data
+```
+
 ### Data Format
 
-Details of preprocessing see `dataset_processing/`. 
-Data folder contains four files：
+Data folder contains seven files：
 
 ```text
 data/text2spotasoc/absa/14lap
@@ -45,12 +57,6 @@ data/text2spotasoc/absa/14lap
 train/val/test.json are data files, and each line is a JSON instance.
 Each JSON instance contains `text` and `record` fields, in which `text` is plain text, and `record` is the SEL representation of the extraction structure.
 Details definition see [DATASETS.md](docs/DATASETS.md).
-```text
-{
-  "text": "Great laptop that offers many great features !",
-  "record": "<extra_id_0> <extra_id_0> opinion <extra_id_5> great <extra_id_1> <extra_id_0> aspect <extra_id_5> features <extra_id_0> positive <extra_id_5> great <extra_id_1> <extra_id_1> <extra_id_1>"
-}
-```
 
 Note:
 - Use the extra character of T5 as the structure indicators, such as `<extra_id_0>`, `<extra_id_1>`, `<extra_id_5>`.
@@ -81,11 +87,11 @@ uie-en-large [[CAS Cloud Box]](https://pan.cstcloud.cn/s/2vrXYBVTbk) [[Google Dr
 
 ``` bash
 # Example of Google Drive
-gdown --id 12Dkh6KLDPvXrkQ1I-1xLqODQSYjkwnvs && unzip uie-base-en.zip
-gdown --id 15OFkWw8kJA1k2g_zehZ0pxcjTABY2iF1 && unzip uie-large-en.zip
+gdown 12Dkh6KLDPvXrkQ1I-1xLqODQSYjkwnvs && unzip uie-base-en.zip
+gdown 15OFkWw8kJA1k2g_zehZ0pxcjTABY2iF1 && unzip uie-large-en.zip
 ```
 
-Put all models to `hf_models/`.
+Put all models to `hf_models/` for default running scripts.
 
 ### Model Training
 
@@ -110,12 +116,19 @@ Trained models are saved in the `output_dir` specified by `run_seq2seq_record.ba
 
 Simple Training Command
 ```
-bash run_seq2seq_record.bash -v -d 2 \
-  -b 16 -k 1 --lr 3e-4 --warmup_ratio 0.06 \
-  -i absa/14lap --epoch 50 \
-  --spot_noise 0.1 --asoc_noise 0.1 -f spotasoc \
-  --epoch 50 --map_config config/offset_map/closest_offset_en.yaml \
-  -m hf_models/uie-base-en \
+bash run_seq2seq_record.bash -v -d 0 \
+  -b 16 \
+  -k 3 \
+  --lr 1e-4 \
+  --warmup_ratio 0.06 \
+  -i absa/14lap \
+  --epoch 50 \
+  --spot_noise 0.1 \
+  --asoc_noise 0.1 \
+  -f spotasoc \
+  --epoch 50 \
+  --map_config config/offset_map/closest_offset_en.yaml \
+  -m uie-base-en \
   --random_prompt
 ```
 
@@ -134,7 +147,7 @@ Progress logs
 ...
 ```
 
-Final Result
+Final Result (specific scores may different from different machines and environments)
 ```
 ...
 test offset-rel-strict-P 67.01461377870564
@@ -152,7 +165,7 @@ test offset-rel-strict-F1 62.81800391389433
 | evt-role-(P/R/F1)   | Micro-F1 of Relation Boundary (Event Type, Arg Role, Arg Span) |
 
 
-### Model Evaluation
+### Scripts for Model Evaluation
 
 To verify the performance of the UIE requires converting the generated **SEL** expression into **Record** and then evaluating it.
 
@@ -209,11 +222,9 @@ Related parameters in class _DataTrainingArguments_ are briefly introduced here:
 
 - About **_Sampling Strategy_**
 ``` text
-    - max_prefix_length       Maximum length of prompt
-    - record_schema           record schema read from record.schema
-    - meta_negative           number of negative schema
-    - meta_positive_rate      rate of positive spot
+    - max_prefix_length       Maximum length of SSI
     - ordered_prompt          Whether to sort the spot prompt and asoc prompt or not
+    - record_schema           record schema read from record.schema
 ``` 
 
 - About **_Rejection Mechanism_**
