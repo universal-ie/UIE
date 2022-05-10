@@ -3,11 +3,11 @@
 
 # Check Offset Mapping Performance
 # 用于验证不同 SEL2Record 回标策略的准确值
-# bash scripts/check_offset_map_gold_as_pred.bash data/text2spotasocname/absa/14lap config/offset_map/closest_offset_en.yaml spotasocname
+# bash scripts/check_offset_map_gold_as_pred.bash data/text2spotasoc/absa/14lap config/offset_map/closest_offset_en.yaml
 
 folder_name=$1
 config_name=$2
-parser_format=$3
+parser_format=spotasoc
 
 cat ${folder_name}/val.json | python -c "import json, sys
 for line in sys.stdin:
