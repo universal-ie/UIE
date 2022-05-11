@@ -32,7 +32,7 @@ pip install -r requirements.txt
 
 ### Datasets of Extraction Tasks
 
-Details of preprocessing see [Data preprocessing](`dataset_processing/`).
+Details of preprocessing see [Data preprocessing](dataset_processing/).
 
 After that, please link the preprocessed dataset as:
 ``` bash
