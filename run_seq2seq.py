@@ -51,6 +51,7 @@ from uie.seq2seq.data_collator import (
     DynamicSSIGenerator,
 )
 from uie.seq2seq.features import RecordFeature
+from uie.seq2seq.t5_bert_tokenizer import T5BertTokenizer
 
 
 logger = logging.getLogger(__name__)
@@ -362,13 +363,17 @@ def main():
 
     config.max_length = data_args.max_target_length
 
-    tokenizer = AutoTokenizer.from_pretrained(
-        model_args.tokenizer_name if model_args.tokenizer_name else model_args.model_name_or_path,
-        cache_dir=model_args.cache_dir,
-        use_fast=model_args.use_fast_tokenizer,
-        revision=model_args.model_revision,
-        use_auth_token=True if model_args.use_auth_token else None,
-    )
+    tokenizer_name = model_args.tokenizer_name if model_args.tokenizer_name else model_args.model_name_or_path
+    if 'char' in tokenizer_name:
+        tokenizer = T5BertTokenizer.from_pretrained(tokenizer_name)
+    else:
+        tokenizer = AutoTokenizer.from_pretrained(
+            tokenizer_name,
+            cache_dir=model_args.cache_dir,
+            use_fast=model_args.use_fast_tokenizer,
+            revision=model_args.model_revision,
+            use_auth_token=True if model_args.use_auth_token else None,
+        )
 
     to_remove_token_list = list()
     if tokenizer.bos_token:

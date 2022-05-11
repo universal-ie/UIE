@@ -1,0 +1,22 @@
+# 数据来源：https://github.com/hltcoe/golden-horse
+# 预处理：python scripts/preprocess_golden_horse.py
+name: zh_weibo
+path: data/golden-horse/data
+data_class: TokenTagCols
+split:
+  train: weiboNER_2nd_conll.train.word_tag
+  val: weiboNER_2nd_conll.dev.word_tag
+  test: weiboNER_2nd_conll.test.word_tag
+language: zh
+other:
+  tagging: bio
+
+mapper:
+  PER.NOM: 人物
+  PER.NAM: 人物
+  LOC.NAM: 自然地点
+  GPE.NAM: 地理区域
+  ORG.NAM: 组织机构
+  ORG.NOM: 组织机构
+  LOC.NOM: 自然地点
+  GPE.NOM: 地理区域
