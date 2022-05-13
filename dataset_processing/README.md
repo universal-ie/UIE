@@ -82,7 +82,7 @@ wget -P data/NYT-multi https://raw.githubusercontent.com/yubowen-ph/JointER/mast
 
 #### CoNLL04/ACE05-rel
 1. Use the preprocessing code from [sincere](https://github.com/btaille/sincere) repo, then convert them to same format.
-Please follow the instructions to preprocess the CoNLL04 and ACE05-rel datasets, and put them at `data/sincere/data`.
+Please follow the instructions to preprocess the CoNLL04 and ACE05-rel datasets, and put them at `data/sincere/`.
 ```
  $ tree data/sincere/
 data/sincere/
