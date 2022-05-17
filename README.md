@@ -164,7 +164,7 @@ test offset-rel-strict-F1 62.81800391389433
 | rel-strict-(P/R/F1)   | Micro-F1 of Relation Strict (Relation Type, Arg1 Span, Arg1 Type, Arg2 Span, Arg2 Type) |
 | rel-boundary-(P/R/F1)   | Micro-F1 of Relation Boundary (Relation Type, Arg1 Span, Arg2 Span) |
 | evt-trigger-(P/R/F1)   | Micro-F1 of Event Trigger (Event Type, Trigger Span) |
-| evt-role-(P/R/F1)   | Micro-F1 of Relation Boundary (Event Type, Arg Role, Arg Span) |
+| evt-role-(P/R/F1)   | Micro-F1 of Event Argument (Event Type, Arg Role, Arg Span) |
 
 
 ### Scripts for Model Evaluation
