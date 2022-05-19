@@ -1,6 +1,6 @@
 # UIE
 
-- Code for [``Unified Structure Generation for Universal Information Extraction``](https://arxiv.org/pdf/2203.12277.pdf)
+- Code for [``Unified Structure Generation for Universal Information Extraction``](https://aclanthology.org/2022.acl-long.395/)
 - Please contact [Yaojie Lu](http://luyaojie.github.io) ([@luyaojie](mailto:yaojie2017@iscas.ac.cn)) for questions and suggestions.
 
 ## Update
@@ -241,22 +241,26 @@ If this repository helps you, please cite this paper:
 
 Yaojie Lu, Qing Liu, Dai Dai, Xinyan Xiao, Hongyu Lin, Xianpei Han, Le Sun, Hua Wu.
 Unified Structure Generation for Universal Information Extraction.
-Proceedings of the 60th Annual Meeting of the Association for Computational Linguistics.
+In Proceedings of the 60th Annual Meeting of the Association for Computational Linguistics (Volume 1: Long Papers), pages 5755–5772, Dublin, Ireland. Association for Computational Linguistics.
 
 ```
-@misc{lu-etal-2022-uie,
-  author = {Lu, Yaojie and
-    Liu, Qing and
-    Dai, Dai and
-    Xiao, Xinyan and
-    Lin, Hongyu and
-    Han, Xianpei and
-    Sun, Le and
-    Wu, Hua},
-  title = {Unified Structure Generation for Universal Information Extraction},
-  url = {https://arxiv.org/abs/2203.12277},
-  year = {2022},
-  booktitle = {Proceedings of the 60th Annual Meeting of the Association for Computational Linguistics},
+@inproceedings{lu-etal-2022-unified,
+    title = "Unified Structure Generation for Universal Information Extraction",
+    author = "Lu, Yaojie  and
+      Liu, Qing  and
+      Dai, Dai  and
+      Xiao, Xinyan  and
+      Lin, Hongyu  and
+      Han, Xianpei  and
+      Sun, Le  and
+      Wu, Hua",
+    booktitle = "Proceedings of the 60th Annual Meeting of the Association for Computational Linguistics (Volume 1: Long Papers)",
+    month = may,
+    year = "2022",
+    address = "Dublin, Ireland",
+    publisher = "Association for Computational Linguistics",
+    url = "https://aclanthology.org/2022.acl-long.395",
+    pages = "5755--5772",
 }
 ```
 
