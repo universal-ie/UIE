@@ -97,6 +97,8 @@ Put all models to `hf_models/` for default running scripts.
 
 ### Model Training
 
+First make directories `otuput`.
+
 Training scripts as follows:
 
 - `run_seq2seq.py`: Python code entry
@@ -107,7 +109,7 @@ The command for the training is as follows (see bash scripts and Python files fo
 arguments):
 
 ```bash
-. config/data_conf/base_model_conf_absa.ini  && model_name=uie-base dataset_name=absa/14lap bash scripts_exp/run_exp.bash
+. config/data_conf/base_model_conf_absa.ini  && model_name=uie-base-en dataset_name=absa/14lap bash scripts_exp/run_exp.bash
 ```
 
 - `config/data_conf/base_model_conf_absa.ini` refers to using the training settings in `base_model_conf_absa.ini` 
@@ -130,7 +132,7 @@ bash run_seq2seq_record.bash -v -d 0 \
   -f spotasoc \
   --epoch 50 \
   --map_config config/offset_map/closest_offset_en.yaml \
-  -m uie-base-en \
+  -m hf_models/uie-base-en \
   --random_prompt
 ```
 
