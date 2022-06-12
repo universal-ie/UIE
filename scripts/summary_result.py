@@ -107,7 +107,7 @@ class ResultSummary:
 
         return result
 
-    def get_valid_folder(self, model_folders, file_map, span_pretrain=False):
+    def get_valid_folder(self, model_folders, file_map):
         all_result = list()
 
         for model_folder in model_folders:
@@ -120,40 +120,9 @@ class ResultSummary:
                 sub_folder = os.path.join(model_folder, sub_folder_name)
                 log_filename = sub_folder + '.log'
 
-                if span_pretrain:
-                    if os.path.exists(os.path.join(sub_folder, 'span_pretrain')):
-                        default_key = 'running'
-                        trained_folder = os.path.join(sub_folder, 'span_pretrain')
-                        log_filename = os.path.join(
-                            sub_folder, 'span_pretrain.log')
-                        state_filename = os.path.join(
-                            sub_folder, 'span_pretrain', 'trainer_state.json')
-                    else:
-                        print('Unused folder: %s' % sub_folder)
-                        continue
-                else:
-
-                    if os.path.exists(os.path.join(sub_folder, 'event_finetune')):
-                        default_key = 'finetune'
-                        trained_folder = os.path.join(sub_folder, 'event_finetune')
-                        log_filename = os.path.join(
-                            sub_folder, 'event_finetune.log')
-                        state_filename = os.path.join(
-                            sub_folder, 'event_finetune', 'trainer_state.json')
-
-                    elif os.path.exists(os.path.join(sub_folder, 'span_pretrain')):
-                        default_key = 'pretrain'
-                        trained_folder = os.path.join(sub_folder, 'span_pretrain')
-                        log_filename = os.path.join(
-                            sub_folder, 'span_pretrain.log')
-                        state_filename = os.path.join(
-                            sub_folder, 'span_pretrain', 'trainer_state.json')
-
-                    else:
-                        default_key = 'running'
-                        state_filename = os.path.join(
-                            sub_folder, 'trainer_state.json')
-                        trained_folder = sub_folder
+                default_key = 'running'
+                state_filename = os.path.join(sub_folder, 'trainer_state.json')
+                trained_folder = sub_folder
 
                 if os.path.exists(log_filename):
                     out_of_memory = check_out_of_memory(log_filename)
@@ -242,9 +211,6 @@ def main():
                         help='Reduce by mean Function')
     parser.add_argument('-std', dest='std', action='store_true',
                         help='Reduce by std Function')
-    parser.add_argument('-span-pretrain', dest='span_pretrain',
-                        action='store_true',
-                        help='Load Span Pretrain Result for Text2Event')
     parser.add_argument('-record', dest='record', default='record',
                         choices=record_valid_keys_map.keys(),
                         help='Record Type')
@@ -284,7 +250,6 @@ def main():
     all_result = result_summary.get_valid_folder(
         model_folders=valid_model_paths,
         file_map=file_map,
-        span_pretrain=options.span_pretrain
     )
 
     if options.mean:

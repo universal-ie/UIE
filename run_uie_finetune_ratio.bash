@@ -37,7 +37,7 @@ for index in $(seq 1 ${run_time}); do
     eval_steps=$(python scripts/get_eval_batch_num.py ${run_data_folder}/train.json ${batch_size} 20)
     echo Eval each ${eval_steps} batch
 
-    CUDA_VISIBLE_DEVICES=${CUDA_VISIBLE_DEVICES} ${run_command} run_seq2seq.py \
+    CUDA_VISIBLE_DEVICES=${CUDA_VISIBLE_DEVICES} ${run_command} run_uie_finetune.py \
       --do_train --do_eval --do_predict ${constraint_decoding} ${fp16} \
       --use_fast_tokenizer=True \
       --ddp_find_unused_parameters=False \

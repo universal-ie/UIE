@@ -4,6 +4,7 @@
 - Please contact [Yaojie Lu](http://luyaojie.github.io) ([@luyaojie](mailto:yaojie2017@iscas.ac.cn)) for questions and suggestions.
 
 ## Update
+- [2022-06-12] Update pre-training code.
 - [2022-05-10] Update data preprocessing code.
 
 ## Requirements
@@ -95,14 +96,14 @@ gdown 15OFkWw8kJA1k2g_zehZ0pxcjTABY2iF1 && unzip uie-large-en.zip
 
 Put all models to `hf_models/` for default running scripts.
 
-### Model Training
+### Model Fine-tuning
 
 First make directories `otuput`.
 
 Training scripts as follows:
 
-- `run_seq2seq.py`: Python code entry
-- `run_seq2seq_record.bash`: Model training and evaluating process script.
+- `run_uie_finetune.py`: Python code entry
+- `run_uie_finetune.bash`: Model training and evaluating process script.
 - `scripts_exp/run_exp.bash`: Model environment configuration and parameter setting entry.
 
 The command for the training is as follows (see bash scripts and Python files for the corresponding command-line
@@ -116,11 +117,11 @@ arguments):
 - `model_name=uie-base-en` refers to using uie-base-en.
 - `dataset_name=absa/14lap` refers to the dataset path.
 
-Trained models are saved in the `output_dir` specified by `run_seq2seq_record.bash`.
+Trained models are saved in the `output_dir` specified by `run_uie_finetune.bash`.
 
 Simple Training Command
 ```
-bash run_seq2seq_record.bash -v -d 0 \
+bash run_uie_finetune.bash -v -d 0 \
   -b 16 \
   -k 3 \
   --lr 1e-4 \
@@ -169,10 +170,49 @@ test offset-rel-strict-F1 62.81800391389433
 | evt-role-(P/R/F1)   | Micro-F1 of Event Argument (Event Type, Arg Role, Arg Span) |
 
 
+### Model Pre-training
+
+[TODO] Add detailed decription.
+
+### Data Collator
+
+We construct different sequence-to-sequence tasks using different data collators.
+- For pre-training, `HybirdDataCollator` constructs different seq2seq pairs for different tasks, and `DataCollatorForMetaSeq2Seq` constructs ssi with **_Sampling Strategy_**.
+- For fine-tuning, `DataCollatorForMetaSeq2Seq` constructs the dynamic seq2seq pair with **_Rejection Mechanism_**.
+
+#### HybirdDataCollator
+
+We unify different types of (text, strcuture) pairs for pre-training with HybirdDataCollator.
+It contains multiple data collators for different instances:
+- `DataCollatorForMetaSeq2Seq` for pair task, similiar to fine-tune stage
+- `DataCollatorForSeq2Seq` for record task
+- `DataCollatorForT5MLM` for text task
+
+#### DataCollatorForMetaSeq2Seq
+
+**_Sampling Strategy_** and **_Rejection Mechanism_** can be adopted in the training process. 
+
+- `uie/seq2seq/data_collator/meta_data_collator.py` class _DataCollatorForMetaSeq2Seq_ is for collating data, class _DynamicSSIGenerator_ is for prompt sampling
+- `run_uie_finetune.py` class _DataTrainingArguments_ contains related parameters
+
+Related parameters in class _DataTrainingArguments_ are briefly introduced here: 
+
+- About **_Sampling Strategy_**
+``` text
+    - max_prefix_length       Maximum length of SSI
+    - ordered_prompt          Whether to sort the spot/asoc of SSI or not
+    - record_schema           record schema read from record.schema
+``` 
+
+- About **_Rejection Mechanism_**
+``` text
+  - spot_noise              The noise rate of null spot
+  - asoc_noise              The noise rate of null asoc
+```
+
 ### Scripts for Model Evaluation
 
 To verify the performance of the UIE requires converting the generated **SEL** expression into **Record** and then evaluating it.
-
 
 #### 1. Convert structured expressions to record structures (sel2record.py)
 After training, `pred_folder` will contain 'eval_preds_seq2seq.txt' or 'test_preds_seq2seq.txt'
@@ -214,27 +254,6 @@ optional arguments:
 To verify the effect of structure parser, we took the golden answer `SEL` as the prediction result, and evaluate its performance.
 ``` bash
 bash scripts/check_offset_map_gold_as_pred.bash <data-folder> <map-config>
-```
-
-### Data Collator 
-**_Sampling Strategy_** and **_Rejection Mechanism_** can be adopted in the training process. 
-
-- `uie/seq2seq/data_collator/meta_data_collator.py` class _DataCollatorForMetaSeq2Seq_ is for collating data, class _DynamicSSIGenerator_ is for prompt sampling
-- `run_seq2seq.py` class _DataTrainingArguments_ contains related parameters
-
-Related parameters in class _DataTrainingArguments_ are briefly introduced here: 
-
-- About **_Sampling Strategy_**
-``` text
-    - max_prefix_length       Maximum length of SSI
-    - ordered_prompt          Whether to sort the spot prompt and asoc prompt or not
-    - record_schema           record schema read from record.schema
-``` 
-
-- About **_Rejection Mechanism_**
-``` text
-  - spot_noise              The noise rate of null spot
-  - asoc_noise              The noise rate of null asoc
 ```
 
 ## Citation

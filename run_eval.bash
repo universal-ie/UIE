@@ -1,3 +1,5 @@
+#!/usr/bin/env bash
+# -*- coding:utf-8 -*-
 device="0"
 model_path=""
 data_folder=data/text2spotasoc/absa/14lap
@@ -64,7 +66,7 @@ then
   fi
 fi
 
-CUDA_VISIBLE_DEVICES=${device} python3 run_seq2seq.py \
+CUDA_VISIBLE_DEVICES=${device} python3 run_uie_finetune.py \
   --use_fast_tokenizer=True \
   --max_source_length=${max_source_length:-"256"} \
   --max_target_length=${max_target_length:-"192"} \

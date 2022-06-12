@@ -36,7 +36,7 @@
       "span": "AFP", "label": "organization", "asoc": []
     }
   ],
-  "task": "record"
+  "task": "pair"
 }
 ```
 
@@ -47,3 +47,4 @@
 - spot/asoc: positive type of single task fine-tuning, used for noise rejection
 - spot_asoc: target structure in the spot-asoc style
 - entity/relation/event: gold answer with offset for model evaluation
+- task: task for pre-training

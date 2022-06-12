@@ -27,7 +27,7 @@ for batch_size in "${BATCH_SIZE[@]}"; do
             for negative in "${NEGATIVE[@]}"; do
             echo "negative " ${negative}
 
-            bash run_seq2seq_record_shot.bash -k ${run_time} \
+            bash run_uie_finetune_shot.bash -k ${run_time} \
               -m hf_models/${model_name} \
               -d ${selected_gpus} \
               -i ${dataset_name} \

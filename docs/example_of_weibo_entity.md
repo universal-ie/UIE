@@ -30,7 +30,7 @@ uie-char-small (chinese) [[CAS Cloud Box]](https://pan.cstcloud.cn/s/J7HOsDHHQHY
 ## Run Example
 
 ``` bash
-bash run_seq2seq_record.bash -v -d 2 \
+bash run_uie_finetune.bash -v -d 2 \
   -b 16 -k 1 --lr 1e-4 --warmup_ratio 0.06 \
   -i entity_zh/zh_weibo --epoch 50 \
   --spot_noise 0.1 --asoc_noise 0.1 -f spotasoc \
