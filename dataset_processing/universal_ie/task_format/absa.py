@@ -26,17 +26,17 @@ class ABSA(TaskFormat):
         self.opinions = sentence_json['opinions']
 
     def generate_instance(self):
-        entities = dict()
+        aspect_entities = dict()
+        opinion_entities = dict()
         relations = list()
-        entity_map = dict()
 
         for aspect, opinion in zip(self.aspects, self.opinions):
             aspect_span = (aspect['from'], aspect['to'])
             opinion_span = (opinion['from'], opinion['to'])
 
-            if aspect_span not in entity_map:
+            if aspect_span not in aspect_entities:
                 tokens = self.tokens[aspect_span[0]:aspect_span[1]]
-                entities[aspect_span] = Entity(
+                aspect_entities[aspect_span] = Entity(
                     span=Span(
                         tokens=tokens,
                         indexes=list(range(aspect_span[0], aspect_span[1])),
@@ -45,9 +45,9 @@ class ABSA(TaskFormat):
                     label=Label('aspect')
                 )
 
-            if opinion_span not in entity_map:
+            if opinion_span not in opinion_entities:
                 tokens = self.tokens[opinion_span[0]:opinion_span[1]]
-                entities[opinion_span] = Entity(
+                opinion_entities[opinion_span] = Entity(
                     span=Span(
                         tokens=tokens,
                         indexes=list(range(opinion_span[0], opinion_span[1])),
@@ -56,15 +56,19 @@ class ABSA(TaskFormat):
                     label=Label('opinion')
                 )
 
+            if aspect_entities.keys() & opinion_entities.keys():
+                print(aspect_entities.keys())
+                print(opinion_entities.keys())
+
             relations += [Relation(
-                arg1=entities[aspect_span],
-                arg2=entities[opinion_span],
+                arg1=aspect_entities[aspect_span],
+                arg2=opinion_entities[opinion_span],
                 label=Label(aspect['polarity']),
             )]
 
         return Sentence(
             tokens=self.tokens,
-            entities=entities.values(),
+            entities=list(aspect_entities.values()) + list(opinion_entities.values()),
             relations=relations,
         )
 
